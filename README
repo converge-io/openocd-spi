@@ -5,13 +5,31 @@ Uses SPI to implement SWD flashing and debugging reliably, without using GPIO bi
 
 https://lupyuen.github.io/articles/openocd-on-raspberry-pi-better-with-swd-on-spi
 
-This version of OpenOCD is now used in the PineTime Smart Watch Debugger. Thanks everyone for testing! :-)
+@convergians, this repository allows us to flash devices in productions from jigs. 
+It's useful to have a debugger/flasher driven from the Pi GPIO as it is quite compact
+ and can easily be fed to a voltage level translator if the target voltage is different from
+the PI (3V3). 
+A patch has been added that allows to control the direction of the level shifters by driving a 
+pin from high to low. 
 
-https://lupyuen.github.io/articles/debug-rust-mynewt-firmware-for-pinetime-on-raspberry-pi
+To build, you might have to pass the `CFLAGS=-Wno-error` as some warning 
+```
+./bootstrap
+CFLAGS=-Wno-error ./configure --enable-sysfsgpio --enable-bcm2835spi
+make -j6
+sudo make install
+```
 
-If you found this repo useful, please sponsor me a coffee. Thanks! :-)
+The `bcmspi` interface allows for some customisation this is what a typical config file 
+would look like.
+```
+interface bcm2835spi
 
-https://github.com/sponsors/lupyuen
+# Set the speed in kHz, 9000 is close to the level shifter's max 
+bcm2835spi_speed 9000
+# Allows to drive a GPIO to control the level shifter direction
+bcm2835spi_swdio_dir_num 27
+```
 
 Welcome to OpenOCD!
 ===================
